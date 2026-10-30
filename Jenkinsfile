@@ -7,7 +7,7 @@ pipeline {
         DOCKERHUB_USER = 'imt2023065'          // <- your Docker Hub username
         IMAGE_NAME     = "${DOCKERHUB_USER}/calculator"
         IMAGE_TAG      = "${BUILD_NUMBER}"
-        NOTIFY_EMAIL   = 'YOUR_GMAIL'                   // <- build status mails go here
+        NOTIFY_EMAIL   = 'santhoshkiraniiitb@gmail.com'                   // <- build status mails go here
     }
 
     triggers {
