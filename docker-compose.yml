@@ -1,0 +1,37 @@
+# Image comes from Docker Hub; Jenkins sets IMAGE_TAG to the build number.
+# Local default: latest
+services:
+  calculator:
+    image: ${DOCKERHUB_USER:-imt2023065}/calculator:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      - SERVER_PORT=8080
+      - JAVA_TOOL_OPTIONS=-Xmx256m
+    expose:
+      - "8080"
+    networks:
+      - calc-net
+    healthcheck:
+      # wget is available in the alpine JRE image
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/actuator/health | grep -q UP || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      calculator:
+        condition: service_healthy
+    networks:
+      - calc-net
+
+networks:
+  calc-net:
+    driver: bridge
